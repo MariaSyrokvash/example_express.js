@@ -1,0 +1,22 @@
+{
+  "name": "express.js_template",
+  "packageManager": "yarn@4.5.2",
+  "scripts": {
+    "watch": "tsc -w",
+    "dev": "nodemon ./dist/index.js",
+    "start": "concurrently -k -n TSC,DEV -c blue,green \"yarn watch\" \"yarn dev\"",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.2",
+    "@types/node": "^22.15.29",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
