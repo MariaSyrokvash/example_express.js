@@ -1,64 +1,58 @@
 import request from 'supertest';
-import { app } from '../src';
-import { HttpStatus } from '../src/constants/statuses';
-import { Course } from '../src/types/courses';
-import { CreateInputModel } from '../src/models/courses/CreateInputModel';
-import { UpdateInputModel } from '../src/models/courses/UpdateInputModel';
+import { APP_CONFIG } from '../../src/config';
+import { app } from '../../src/app';
+import { HttpStatus } from '../../src/constants/statuses';
+import { CreateInputModel } from '../../src/features/courses/models/CreateInputModel';
+import { CourseType } from '../../src/types/courses';
+import { UpdateInputModel } from '../../src/features/courses/models/UpdateInputModel';
+import { coursesTestManager } from '../utils/coursesTestManager';
 
-describe('/courses', () => {
+describe('Testing courses-API', () => {
   beforeAll(async () => {
-    await request(app).delete('/__test__/db');
+    await request(app).delete(APP_CONFIG.PATH.TEST.BASE + APP_CONFIG.PATH.TEST.DB);
   });
 
   it('returns an array of courses', async () => {
-    await request(app).get('/courses').expect(HttpStatus.Ok_200, []);
+    await request(app).get(APP_CONFIG.PATH.COURSES.BASE).expect(HttpStatus.Ok_200, []);
   });
 
   it('should return 404 for not existing course', async () => {
-    await request(app).get('/courses/10').expect(HttpStatus.NotFound_404);
+    await request(app).get(`${APP_CONFIG.PATH.COURSES.BASE}/10`).expect(HttpStatus.NotFound_404);
   });
 
   it('should not create course with incorrect input data', async () => {
     const newCourse: CreateInputModel = { title: '' };
-    await request(app).post('/courses').send(newCourse).expect(HttpStatus.BadRequest_400);
+    await request(app).post(APP_CONFIG.PATH.COURSES.BASE).send(newCourse).expect(HttpStatus.BadRequest_400);
 
-    await request(app).get('/courses').expect(HttpStatus.Ok_200, []);
+    await request(app).get(APP_CONFIG.PATH.COURSES.BASE).expect(HttpStatus.Ok_200, []);
   });
 
-  let createdCourse1: Course;
+  let createdCourse1: CourseType;
   it('should create course with correct input data', async () => {
     const newCourse: CreateInputModel = { title: 'it-incubator course' };
-    const createdResponse = await request(app)
-      .post('/courses')
-      .send(newCourse)
-      .expect(HttpStatus.Created_201);
+    const { createdEntity } = await coursesTestManager.createCourse(newCourse)
 
-    createdCourse1 = createdResponse.body;
+    createdCourse1 = createdEntity;
 
-    expect(createdCourse1).toEqual({
-      id: expect.any(Number),
-      title: newCourse.title,
-    });
-
-    await request(app).get('/courses').expect(HttpStatus.Ok_200, [createdCourse1]);
+    await request(app).get(APP_CONFIG.PATH.COURSES.BASE).expect(HttpStatus.Ok_200, [createdCourse1]);
   });
 
   it('should not  update course with incorrect input data', async () => {
     const updatedCourseTitle: UpdateInputModel = { title: '' };
     await request(app)
-      .put(`/courses/${createdCourse1.id}`)
+      .put(`${APP_CONFIG.PATH.COURSES.BASE}/${createdCourse1.id}`)
       .send(updatedCourseTitle)
       .expect(HttpStatus.BadRequest_400);
 
     await request(app)
-      .get(`/courses/${createdCourse1.id}`)
+      .get(`${APP_CONFIG.PATH.COURSES.BASE}/${createdCourse1.id}`)
       .expect(HttpStatus.Ok_200, createdCourse1);
   });
 
   it('should not  update course that not exists', async () => {
     const updatedCourseTitle = { title: 'good title' };
     await request(app)
-      .put(`/courses/incorrectId`)
+      .put(`${APP_CONFIG.PATH.COURSES.BASE}/incorrectId`)
       .send(updatedCourseTitle)
       .expect(HttpStatus.NotFound_404);
   });
@@ -66,7 +60,7 @@ describe('/courses', () => {
   it('should update course with correct input data', async () => {
     const updatedCourseTitle: UpdateInputModel = { title: 'good new Title' };
     const result = await request(app)
-      .put(`/courses/${createdCourse1.id}`)
+      .put(`${APP_CONFIG.PATH.COURSES.BASE}/${createdCourse1.id}`)
       .send(updatedCourseTitle)
       .expect(HttpStatus.Ok_200);
 
@@ -80,22 +74,14 @@ describe('/courses', () => {
       });
   });
 
-  let createdCourse2: Course;
+  let createdCourse2: CourseType;
   it('should one more course', async () => {
     const title = 'it-incubator course 2';
-    const createdResponse = await request(app)
-      .post('/courses')
-      .send({ title: title })
-      .expect(HttpStatus.Created_201);
+    const { createdEntity } = await coursesTestManager.createCourse({ title: title })
 
-    createdCourse2 = createdResponse.body;
+    createdCourse2 = createdEntity;
 
-    expect(createdCourse2).toEqual({
-      id: expect.any(Number),
-      title: title,
-    });
-
-    await request(app).get('/courses').expect(HttpStatus.Ok_200, [createdCourse1, createdCourse2]);
+    await request(app).get(APP_CONFIG.PATH.COURSES.BASE).expect(HttpStatus.Ok_200, [createdCourse1, createdCourse2]);
   });
 
   it('should delete both courses', async () => {

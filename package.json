@@ -6,9 +6,10 @@
     "dev": "nodemon ./dist/index.js",
     "start": "concurrently -k -n TSC,DEV -c blue,green \"yarn watch\" \"yarn dev\"",
     "format": "prettier --write .",
-    "test": "jest"
+    "test": "jest --config ./__tests__/jest-e2e.config.js"
   },
   "dependencies": {
+    "dotenv": "^16.5.0",
     "express": "^5.1.0"
   },
   "devDependencies": {
