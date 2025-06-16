@@ -13,7 +13,7 @@ import { UpdateInputModel } from './models/UpdateInputModel';
 
 export const coursesRouter = Router()
 
-coursesRouter.get(APP_CONFIG.PATH.COURSES.ROOT, (req: TypedRequestQuery<QueryInputModel>, res: Response<ViewCourseModel[]>) => {
+coursesRouter.get(APP_CONFIG.PATH.ROOT, (req: TypedRequestQuery<QueryInputModel>, res: Response<ViewCourseModel[]>) => {
   const queryTitle = req.query.title || '';
   const filteredCourses = db.courses.filter((c) => c.title.includes(queryTitle));
   const mappedCourses: ViewCourseModel[] = filteredCourses.map(getViewCourseModel);
@@ -31,7 +31,7 @@ coursesRouter.get(APP_CONFIG.PATH.COURSES.BY_ID, (req: TypedRequestParams<URIPar
     res.json(mappedCourse);
   });
 
-coursesRouter.post(APP_CONFIG.PATH.COURSES.ROOT, (req: TypedRequestBody<CreateInputModel>, res: Response<ViewCourseModel>) => {
+coursesRouter.post(APP_CONFIG.PATH.ROOT, (req: TypedRequestBody<CreateInputModel>, res: Response<ViewCourseModel>) => {
   const bodyTitle = req.body.title?.toString();
   if (!bodyTitle?.length) {
     res.sendStatus(HttpStatus.BadRequest_400);

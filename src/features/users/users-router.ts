@@ -13,7 +13,7 @@ import { UpdateUserModel } from './models/UpdateUserModel';
 
 export const usersRouter = Router()
 
-usersRouter.get(APP_CONFIG.PATH.USERS.ROOT, (req: TypedRequestQuery<QueryUsersModel>, res: Response<ViewUserModel[]>) => {
+usersRouter.get(APP_CONFIG.PATH.ROOT, (req: TypedRequestQuery<QueryUsersModel>, res: Response<ViewUserModel[]>) => {
   const queryUserName = req.query.userName || '';
   const filteredUsers = db.users.filter((c) => c.userName.includes(queryUserName));
   const mappedUser: ViewUserModel[] = filteredUsers.map(getViewUserModel);
@@ -31,7 +31,7 @@ usersRouter.get(APP_CONFIG.PATH.USERS.BY_ID, (req: TypedRequestParams<URIParamsU
     res.json(mappedUser);
   });
 
-usersRouter.post(APP_CONFIG.PATH.USERS.ROOT, (req: TypedRequestBody<CreateUserModel>, res: Response<ViewUserModel>) => {
+usersRouter.post(APP_CONFIG.PATH.ROOT, (req: TypedRequestBody<CreateUserModel>, res: Response<ViewUserModel>) => {
   const bodyUserName = req.body.userName?.toString();
   if (!bodyUserName?.length) {
     res.sendStatus(HttpStatus.BadRequest_400);

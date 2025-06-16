@@ -11,7 +11,7 @@ import { UserCourseBindingType } from '../../types/courses';
 
 export const usersCoursesBindingRouter = Router()
 
-usersCoursesBindingRouter.post(APP_CONFIG.PATH.USERS.ROOT, (req: TypedRequestBody<CreateUserCourseBindingModel>, res: Response<ViewUserCourseBindingModel>) => {
+usersCoursesBindingRouter.post(APP_CONFIG.PATH.ROOT, (req: TypedRequestBody<CreateUserCourseBindingModel>, res: Response<ViewUserCourseBindingModel>) => {
   const userId = req.body.userId;
   const courseId = req.body.courseId;
 
